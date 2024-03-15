@@ -6,3 +6,16 @@ export const listUsers = async (request: Request, response: Response) => {
 
   response.send(users)
 }
+
+export const findUserById = async (request: Request, response: Response) => {
+  const { id } = request.params
+  const user = await prisma.user.findUnique({
+    where: { id }
+  })
+
+  if (!user) {
+    return response.status(404).send({ error: 'User not found' })
+  }
+
+  response.send(user)
+}
