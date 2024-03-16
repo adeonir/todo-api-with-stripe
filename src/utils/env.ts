@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 export const envSchema = z.object({
+  APP_URL: z.string().url(),
   STRIPE_PUBLISHABLE_KEY: z.string(),
   STRIPE_SECRET_KEY: z.string(),
   PRO_PLAN_PRICE_ID: z.string(),
