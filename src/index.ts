@@ -17,7 +17,7 @@ app.post('/users', createUser)
 app.get('/tasks', getTasks)
 app.post('/tasks', createTask)
 
-app.get('/checkout', createCheckout)
+app.post('/checkout', createCheckout)
 
 app.listen(port, () => {
   console.info(`Server is running on port ${port}`)
