@@ -2,7 +2,7 @@ import express from 'express'
 
 import { createUser, findUserById, getUsers } from '~/controllers/user'
 
-import { createTask, getTasks } from './controllers/todo'
+import { createTask, getTasks } from './controllers/task'
 
 const app = express()
 const port = 3000
