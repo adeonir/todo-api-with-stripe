@@ -6,7 +6,7 @@ import { prisma } from '~/lib/prisma'
 import type { CreateUserInput } from './types'
 import { createUserSchema } from './types'
 
-export const listUsers = async (request: Request, response: Response) => {
+export const getUsers = async (request: Request, response: Response) => {
   const users = await prisma.user.findMany()
 
   response.send(users)

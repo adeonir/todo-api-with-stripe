@@ -1,17 +1,18 @@
 import express from 'express'
 
-import { createUser, findUserById, listUsers } from '~/controllers/user'
+import { createUser, findUserById, getUsers } from '~/controllers/user'
 
-import { createTask } from './controllers/todo'
+import { createTask, getTasks } from './controllers/todo'
 
 const app = express()
 const port = 3000
 
 app.use(express.json())
 
-app.get('/users', listUsers)
+app.get('/users', getUsers)
 app.post('/users', createUser)
 app.get('/users/:id', findUserById)
+app.get('/tasks', getTasks)
 app.post('/tasks', createTask)
 
 app.listen(port, () => {

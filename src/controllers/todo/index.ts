@@ -6,6 +6,28 @@ import { prisma } from '~/lib/prisma'
 import type { CreateTaskInput } from './types'
 import { createTaskSchema } from './types'
 
+export const getTasks = async (request: Request, response: Response) => {
+  const userId = request.headers['x-user-id'] as string
+
+  if (!userId) {
+    return response.status(401).send({ error: 'Unauthorized' })
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+
+  if (!user) {
+    return response.status(401).send({ error: 'Unauthorized' })
+  }
+
+  const tasks = await prisma.task.findMany({
+    where: {
+      userId,
+    },
+  })
+
+  return response.status(200).send(tasks)
+}
+
 export const createTask = async (request: Request, response: Response) => {
   const userId = request.headers['x-user-id'] as string
 
