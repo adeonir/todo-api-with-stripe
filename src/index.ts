@@ -1,6 +1,8 @@
 import express from 'express'
-import { createUser, findUserById, listUsers } from "~/controllers/user"
-import { createTask } from "./controllers/todo"
+
+import { createUser, findUserById, listUsers } from '~/controllers/user'
+
+import { createTask } from './controllers/todo'
 
 const app = express()
 const port = 3000
@@ -13,5 +15,5 @@ app.get('/users/:id', findUserById)
 app.post('/tasks', createTask)
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+  console.info(`Server is running on port ${port}`)
 })

@@ -1,9 +1,10 @@
 import type { Request, Response } from 'express'
+import { z } from 'zod'
 
-import { prisma } from "~/lib/prisma"
-import type { CreateTaskInput } from "./types"
-import { createTaskSchema } from "./types"
-import { z } from "zod"
+import { prisma } from '~/lib/prisma'
+
+import type { CreateTaskInput } from './types'
+import { createTaskSchema } from './types'
 
 export const createTask = async (request: Request, response: Response) => {
   const userId = request.headers['x-user-id'] as string
@@ -24,9 +25,11 @@ export const createTask = async (request: Request, response: Response) => {
     parsed = createTaskSchema.parse(request.body)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errorMessage = error.errors.map(e => e.message).join(', ');
-      return response.status(400).send({ error: errorMessage });
+      const errorMessage = error.errors.map((e) => e.message).join(', ')
+
+      return response.status(400).send({ error: errorMessage })
     }
+
     return response.status(500).send({ error: 'Internal server error' })
   }
 
@@ -37,10 +40,10 @@ export const createTask = async (request: Request, response: Response) => {
       title,
       user: {
         connect: {
-          id: userId
-        }
-      }
-    }
+          id: userId,
+        },
+      },
+    },
   })
 
   return response.status(201).send(task)
