@@ -1,5 +1,5 @@
 import express from 'express'
-import { findUserById, listUsers } from "~/controllers/user"
+import { createUser, findUserById, listUsers } from "~/controllers/user"
 
 const app = express()
 const port = 3000
@@ -7,6 +7,7 @@ const port = 3000
 app.use(express.json())
 
 app.get('/users', listUsers)
+app.post('/users', createUser)
 app.get('/users/:id', findUserById)
 
 app.listen(port, () => {
