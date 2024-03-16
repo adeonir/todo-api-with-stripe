@@ -35,6 +35,7 @@ module.exports = {
   },
   ignorePatterns: [
     'node_modules/',
+    'prisma/',
     'dist/',
     '.eslintrc.cjs',
   ],
