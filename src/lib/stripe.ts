@@ -2,6 +2,8 @@ import Stripe from 'stripe'
 
 import { env } from '~/utils/env'
 
+import { prisma } from './prisma'
+
 const config = {
   stripe: {
     publicApiKey: env.STRIPE_PUBLISHABLE_KEY,
@@ -58,6 +60,27 @@ export const handleWebhookCheckout = async (eventObj: Stripe.Checkout.Session) =
     data: {
       customerId,
       subscriptionId,
+    },
+  })
+}
+
+export const handleWebhookUpdate = async (eventObj: Stripe.Subscription) => {
+  const subscriptionId = eventObj.id
+  const customerId = eventObj.customer as string
+  const subscriptionStatus = eventObj.status
+
+  const user = await prisma.user.findFirst({ where: { customerId }, select: { id: true } })
+
+  if (!user) {
+    throw new Error('User not found')
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      customerId,
+      subscriptionId,
+      subscriptionStatus,
     },
   })
 }
