@@ -15,13 +15,20 @@ export const stripe = new Stripe(config.stripe.secretKey, {
   apiVersion: '2023-10-16',
 })
 
+const SUCCESS_URL = `${env.APP_URL}/success`
+const CANCEL_URL = `${env.APP_URL}/cancel`
+
 export const handleCheckoutSession = async (userId: string) => {
+  if (!userId) {
+    throw new Error('Invalid user id')
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'subscription',
-      success_url: `${env.APP_URL}/success`,
-      cancel_url: `${env.APP_URL}/cancel`,
+      success_url: SUCCESS_URL,
+      cancel_url: CANCEL_URL,
       client_reference_id: userId,
       line_items: [
         {
@@ -34,6 +41,8 @@ export const handleCheckoutSession = async (userId: string) => {
     return { url: session.url }
   } catch (error) {
     console.error('Error creating checkout session', error)
+
+    return { error: 'An error occurred while creating the checkout session' }
   }
 }
 
