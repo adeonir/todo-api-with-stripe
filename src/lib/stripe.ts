@@ -34,3 +34,30 @@ export const handleCheckoutSession = async (userId: string) => {
     console.error('Error creating checkout session', error)
   }
 }
+
+export const handleWebhookCheckout = async (eventObj: Stripe.Checkout.Session) => {
+  const clienteReferenceId = eventObj.client_reference_id
+  const customerId = eventObj.customer as string
+  const subscriptionId = eventObj.subscription as string
+  const checkoutStatus = eventObj.status
+
+  if (checkoutStatus !== 'complete') return
+
+  if (!clienteReferenceId || !subscriptionId || !customerId) {
+    throw new Error('Invalid checkout session')
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: clienteReferenceId }, select: { id: true } })
+
+  if (!user) {
+    throw new Error('User not found')
+  }
+
+  await prisma.user.update({
+    where: { id: clienteReferenceId },
+    data: {
+      customerId,
+      subscriptionId,
+    },
+  })
+}
