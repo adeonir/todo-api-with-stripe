@@ -29,13 +29,17 @@ export const createCustomer = async ({ name, email }: { name: string; email: str
   return await stripe.customers.create({ name, email })
 }
 
+export const handleCheckoutSession = async (user: User) => {
   try {
+    const customer = await createCustomer({ name: user.name, email: user.email })
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'subscription',
-      success_url: SUCCESS_URL,
-      cancel_url: CANCEL_URL,
-      client_reference_id: userId,
+      success_url: `${env.APP_URL}/success`,
+      cancel_url: `${env.APP_URL}/cancel`,
+      client_reference_id: user.id,
+      customer: customer.id,
       line_items: [
         {
           price: env.PRO_PLAN_PRICE_ID,
@@ -44,19 +48,17 @@ export const createCustomer = async ({ name, email }: { name: string; email: str
       ],
     })
 
-    return { url: session.url }
+    return { customerId: customer.id, url: session.url }
   } catch (error) {
-    console.error('Error creating checkout session', error)
-
-    return { error: 'An error occurred while creating the checkout session' }
+    throw new Error('An error occurred while creating the checkout session')
   }
 }
 
-export const handleWebhookCheckout = async (eventObj: Stripe.Checkout.Session) => {
-  const clienteReferenceId = eventObj.client_reference_id
-  const customerId = eventObj.customer as string
-  const subscriptionId = eventObj.subscription as string
-  const checkoutStatus = eventObj.status
+export const handleCheckoutWebhook = async (event: { data: { object: Stripe.Checkout.Session } }) => {
+  const clienteReferenceId = event.data.object.client_reference_id
+  const customerId = event.data.object.customer as string
+  const subscriptionId = event.data.object.subscription as string
+  const checkoutStatus = event.data.object.status
 
   if (checkoutStatus !== 'complete') return
 
