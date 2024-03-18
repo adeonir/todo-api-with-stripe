@@ -2,6 +2,7 @@ import type { Request, Response } from 'express'
 import { z } from 'zod'
 
 import { prisma } from '~/lib/prisma'
+import { createCustomer } from '~/lib/stripe'
 
 import type { CreateUserInput } from './types'
 import { createUserSchema } from './types'
@@ -48,10 +49,13 @@ export const createUser = async (request: Request, response: Response) => {
     return response.status(400).send({ error: 'Email already exists' })
   }
 
+  const customer = await createCustomer({ name, email })
+
   const user = await prisma.user.create({
     data: {
       name,
       email,
+      customerId: customer.id,
     },
   })
 

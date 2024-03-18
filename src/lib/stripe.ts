@@ -15,13 +15,19 @@ export const stripe = new Stripe(config.stripe.secretKey, {
   apiVersion: '2023-10-16',
 })
 
-const SUCCESS_URL = `${env.APP_URL}/success`
-const CANCEL_URL = `${env.APP_URL}/cancel`
+const getCustomerByEmail = async (email: string) => {
+  const customers = await stripe.customers.list({ email })
 
-export const handleCheckoutSession = async (userId: string) => {
-  if (!userId) {
-    throw new Error('Invalid user id')
-  }
+  return customers.data.length > 0 ? customers.data[0] : null
+}
+
+export const createCustomer = async ({ name, email }: { name: string; email: string }) => {
+  const customer = await getCustomerByEmail(email)
+
+  if (customer) return customer
+
+  return await stripe.customers.create({ name, email })
+}
 
   try {
     const session = await stripe.checkout.sessions.create({
