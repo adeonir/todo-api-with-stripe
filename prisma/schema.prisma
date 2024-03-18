@@ -16,7 +16,7 @@ model User {
   customerId         String?
   subscriptionId     String?
   subscriptionStatus String?
-  Task               Task[]
+  tasks              Task[]
 }
 
 model Task {
