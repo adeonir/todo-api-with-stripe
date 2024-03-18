@@ -1,3 +1,4 @@
+import type { User } from '@prisma/client'
 import Stripe from 'stripe'
 
 import { env } from '~/utils/env'
@@ -81,10 +82,10 @@ export const handleCheckoutWebhook = async (event: { data: { object: Stripe.Chec
   })
 }
 
-export const handleWebhookUpdate = async (eventObj: Stripe.Subscription) => {
-  const subscriptionId = eventObj.id
-  const customerId = eventObj.customer as string
-  const subscriptionStatus = eventObj.status
+export const handleUpdateWebhook = async (event: { data: { object: Stripe.Subscription } }) => {
+  const subscriptionId = event.data.object.id
+  const customerId = event.data.object.customer as string
+  const subscriptionStatus = event.data.object.status
 
   const user = await prisma.user.findFirst({ where: { customerId }, select: { id: true } })
 

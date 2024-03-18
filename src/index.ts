@@ -2,11 +2,13 @@ import express from 'express'
 
 import { createUser, findUserById, getUsers } from '~/controllers/user'
 
-import { createCheckout } from './controllers/subscription'
+import { createCheckout, stripeWebhook } from './controllers/subscription'
 import { createTask, getTasks } from './controllers/task'
 
 const app = express()
 const port = 3000
+
+app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhook)
 
 app.use(express.json())
 
