@@ -6,6 +6,8 @@ import { prisma } from '~/lib/prisma'
 import type { CreateTaskInput } from './types'
 import { createTaskSchema } from './types'
 
+const FREE_LIMIT_QUOTA = 5
+
 export const getTasks = async (request: Request, response: Response) => {
   const userId = request.headers['x-user-id'] as string
 
@@ -35,10 +37,26 @@ export const createTask = async (request: Request, response: Response) => {
     return response.status(401).send({ error: 'Unauthorized' })
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } })
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      subscriptionId: true,
+      subscriptionStatus: true,
+      _count: { select: { tasks: true } },
+    },
+  })
 
   if (!user) {
     return response.status(401).send({ error: 'Unauthorized' })
+  }
+
+  const hasQuotaAvailable = user._count.tasks <= FREE_LIMIT_QUOTA
+  const hasSubscriptionId = Boolean(user.subscriptionId)
+  const hasActiveSubscription = user.subscriptionStatus === 'active'
+
+  if (!hasQuotaAvailable && !hasSubscriptionId && !hasActiveSubscription) {
+    return response.status(403).send({ error: 'No quota available. Please upgrade your plan!' })
   }
 
   let parsed: CreateTaskInput
