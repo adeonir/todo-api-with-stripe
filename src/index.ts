@@ -60,11 +60,113 @@ app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhook)
 
 app.use(express.json())
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Users
+ *   - name: Tasks
+ */
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     tags: [Users]
+ *     description: Get all users
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 app.get('/users', getUsers)
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     tags: [Users]
+ *     description: Get a user by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cltx06u9s0000f2sew46r3pid
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 app.get('/users/:id', findUserById)
+
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     tags: [Users]
+ *     description: Create a new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *           examples:
+ *             user:
+ *               value:
+ *                 name: "John Doe"
+ *                 email: "john.doe@example.com"
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 app.post('/users', createUser)
 
-app.get('/tasks', getTasks)
+/**
+ * @swagger
+ * /tasks:
+ *   get:
+ *     tags: [Tasks]
+ *     description: Get all tasks
+ *     parameters:
+ *      - in: header
+ *        name: 'x-user-id'
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: User ID 'cltx06u9s0000f2sew46r3pid'
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+app.get('/tasks', createTask)
+
+/**
+ * @swagger
+ * /tasks:
+ *   post:
+ *     tags: [Tasks]
+ *     description: Create a new task
+ *     parameters:
+ *      - in: header
+ *        name: 'x-user-id'
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: User ID 'cltx06u9s0000f2sew46r3pid'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Task'
+ *           examples:
+ *            task:
+ *             value:
+ *              title: "Buy milk"
+ *     responses:
+ *       201:
+ *         description: Created
+ */
 app.post('/tasks', createTask)
 
 app.post('/checkout', createCheckout)
