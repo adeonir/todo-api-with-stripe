@@ -169,6 +169,36 @@ app.get('/tasks', getTasks)
  */
 app.post('/tasks', createTask)
 
+/**
+ * @swagger
+ * /tasks/{id}:
+ *   patch:
+ *     tags: [Tasks]
+ *     description: Update a task by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cltx06u9s0000f2sew46r3pid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Task'
+ *           examples:
+ *             task:
+ *               value:
+ *                 title: "Buy milk"
+ *                 done: true
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+app.patch('/tasks/:id', updateTask)
+
 app.post('/checkout', createCheckout)
 
 app.listen(port, () => {
