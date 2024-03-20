@@ -5,3 +5,10 @@ export const createTaskSchema = z.object({
 })
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>
+
+export const updateTaskSchema = z.object({
+  title: z.string().min(1, 'Title is required').optional(),
+  done: z.boolean().optional(),
+})
+
+export type UpdateTaskInput = z.infer<typeof updateTaskSchema>

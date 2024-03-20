@@ -3,8 +3,8 @@ import { z } from 'zod'
 
 import { prisma } from '~/lib/prisma'
 
-import type { CreateTaskInput } from './types'
-import { createTaskSchema } from './types'
+import type { CreateTaskInput, UpdateTaskInput } from './types'
+import { createTaskSchema, updateTaskSchema } from './types'
 
 const FREE_LIMIT_QUOTA = 5
 
@@ -88,3 +88,60 @@ export const createTask = async (request: Request, response: Response) => {
 
   return response.status(201).send(task)
 }
+
+export const updateTask = async (request: Request, response: Response) => {
+  const userId = request.headers['x-user-id'] as string
+
+  if (!userId) {
+    return response.status(401).send({ error: 'Unauthorized' })
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+
+  if (!user) {
+    return response.status(401).send({ error: 'Unauthorized' })
+  }
+
+  const taskId = request.params.id
+
+  if (!taskId) {
+    return response.status(400).send({ error: 'Task ID not provided' })
+  }
+
+  const task = await prisma.task.findUnique({ where: { id: taskId } })
+
+  if (!task) {
+    return response.status(404).send({ error: 'Task not found' })
+  }
+
+  if (task.userId !== userId) {
+    return response.status(403).send({ error: 'Forbidden' })
+  }
+
+  let parsed: UpdateTaskInput
+
+  try {
+    parsed = updateTaskSchema.parse(request.body)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errorMessage = error.errors.map((e) => e.message).join(', ')
+
+      return response.status(400).send({ error: errorMessage })
+    }
+
+    return response.status(500).send({ error: 'Internal server error' })
+  }
+
+  const { title, done } = parsed
+
+  const updatedTask = await prisma.task.update({
+    where: { id: taskId },
+    data: {
+      title,
+      done,
+    },
+  })
+
+  return response.status(200).send(updatedTask)
+}
+
