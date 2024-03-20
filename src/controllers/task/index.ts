@@ -145,3 +145,36 @@ export const updateTask = async (request: Request, response: Response) => {
   return response.status(200).send(updatedTask)
 }
 
+export const deleteTask = async (request: Request, response: Response) => {
+  const userId = request.headers['x-user-id'] as string
+
+  if (!userId) {
+    return response.status(401).send({ error: 'Unauthorized' })
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+
+  if (!user) {
+    return response.status(401).send({ error: 'Unauthorized' })
+  }
+
+  const taskId = request.params.id
+
+  if (!taskId) {
+    return response.status(400).send({ error: 'Task ID not provided' })
+  }
+
+  const task = await prisma.task.findUnique({ where: { id: taskId } })
+
+  if (!task) {
+    return response.status(404).send({ error: 'Task not found' })
+  }
+
+  if (task.userId !== userId) {
+    return response.status(403).send({ error: 'Forbidden' })
+  }
+
+  await prisma.task.delete({ where: { id: taskId } })
+
+  return response.status(204).send()
+}
