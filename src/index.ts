@@ -5,7 +5,7 @@ import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 
 import { createCheckout, stripeWebhook } from '~/controllers/subscription'
-import { createTask, getTasks, updateTask } from '~/controllers/task'
+import { createTask, deleteTask, getTasks, updateTask } from '~/controllers/task'
 import { createUser, findUserById, getUsers } from '~/controllers/user'
 
 const app = express()
@@ -198,6 +198,25 @@ app.post('/tasks', createTask)
  *         description: Success
  */
 app.patch('/tasks/:id', updateTask)
+
+/**
+ * @swagger
+ * /tasks/{id}:
+ *   delete:
+ *     tags: [Tasks]
+ *     description: Delete a task by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cltx06u9s0000f2sew46r3pid
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+app.delete('/tasks/:id', deleteTask)
 
 app.post('/checkout', createCheckout)
 
