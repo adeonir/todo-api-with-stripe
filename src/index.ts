@@ -5,7 +5,7 @@ import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 
 import { createCheckout, stripeWebhook } from '~/controllers/subscription'
-import { createTask, getTasks } from '~/controllers/task'
+import { createTask, getTasks, updateTask } from '~/controllers/task'
 import { createUser, findUserById, getUsers } from '~/controllers/user'
 
 const app = express()
