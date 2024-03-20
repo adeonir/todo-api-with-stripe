@@ -36,6 +36,19 @@ The API documentation is available at `/api-docs` endpoint. It is generated usin
 
 You can access it by navigating to `http://localhost:3000/api-docs` in your browser when the server is running.
 
+## Setting Up Stripe
+
+This application uses Stripe for payment processing. To set it up:
+
+1. Create an account on [Stripe](https://stripe.com/).
+2. After logging in, navigate to the [Products](https://dashboard.stripe.com/test/products) page.
+3. Click on '+ Add product'.
+4. Name the product 'Pro' and set the price as you see fit.
+5. After creating the product, you'll be redirected to a page with details about the product. Here, you'll find the 'Price ID'. Copy this ID.
+6. Paste the copied 'Price ID' as the value for `PRO_PLAN_PRICE_ID` in your `.env` file.
+
+Remember to switch between viewing test data and real data on the Stripe dashboard. The 'Price ID' will be different in test mode and live mode.
+
 ## Environment Variables
 
 This project uses several environment variables for configuration. You can find an example in the [`.env.example`](.env.example) file. Here's what each variable is used for:
